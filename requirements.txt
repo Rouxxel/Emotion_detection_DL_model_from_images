@@ -1,0 +1,4 @@
+kaggle== 1.7.4.5
+tensorflow== 2.17.0
+matplotlib== 3.10.3
+pillow== 10.4.0
