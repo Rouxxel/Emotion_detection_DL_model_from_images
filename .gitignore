@@ -1,6 +1,7 @@
 # Ignore directories
 /dataset/
 /.kaggle/
+/trained_dl_models/
 
 
 # Byte-compiled / optimized / DLL files
