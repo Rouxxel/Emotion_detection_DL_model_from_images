@@ -26,7 +26,7 @@ def setup_kaggle_credentials(kaggle_json_path):
     os.chmod(dest_path, 0o600)
     logging.info(f"Set permissions on {dest_path}")
 
-def main(kaggle_json_path="C:/Users/Acer/.kaggle/kaggle.json", requirements_path="requirements.txt"):
+def main(kaggle_json_path="C:/Users/YourName/.kaggle/kaggle.json", requirements_path="requirements.txt"):
     # 1. Install requirements
     install_requirements(requirements_path)
 
