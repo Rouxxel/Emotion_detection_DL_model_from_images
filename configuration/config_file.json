@@ -1,0 +1,30 @@
+{
+    "images":{
+        "height":48,
+        "width":48
+    },
+    "classes":{
+        "labels":["Anger", "Disgust", "Fear", "Happy", "Neutral", "Sadness", "Surprise"],
+        "emojis":["👿", "🤢" , "😱" , "😊" , "😐 ", "😔" , "😲" ]
+    },
+    "datasets":{
+        "train_directory":"../dataset/train",
+        "test_directory":"../dataset/test"
+    },
+    "dl_model":{
+        "transfer_learning":{
+            "name":"emotion_detection_from_image_transfer_learning.h5",
+            "epoch":30,
+            "fine_tuning_epochs":20,
+            "early_stop_crit":3
+        },
+        "no_transfer_learning":{
+            "name":"emotion_detection_from_image_no_transfer_learning.h5",
+            "epoch":20
+        },
+        "batch_size":64,
+        "fixed_seed":12,
+        "learn_r":0.01,
+        "directory": "../trained_dl_models"
+    }
+}
