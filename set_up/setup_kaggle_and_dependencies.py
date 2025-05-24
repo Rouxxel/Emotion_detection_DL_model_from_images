@@ -4,6 +4,8 @@ import subprocess
 import sys
 import logging
 
+logging.basicConfig(level=logging.INFO)
+
 def install_requirements(requirements_path="requirements.txt"):
     logging.info(f"Installing requirements from {requirements_path}...")
     subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", requirements_path])

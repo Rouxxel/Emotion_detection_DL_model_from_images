@@ -8,6 +8,7 @@
         "emojis":["👿", "🤢" , "😱" , "😊" , "😐 ", "😔" , "😲" ]
     },
     "datasets":{
+        "dataset_directory":"../dataset",
         "train_directory":"../dataset/train",
         "test_directory":"../dataset/test"
     },

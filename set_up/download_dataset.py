@@ -3,6 +3,8 @@ import subprocess
 import logging
 import zipfile
 
+logging.basicConfig(level=logging.INFO)
+
 def download_dataset(dataset_name="ananthu017/emotion-detection-fer", dataset_dir="dataset"):
     project_root = os.path.abspath(os.getcwd())  # Get the current working directory (root of the project)
     full_dataset_dir = os.path.join(project_root, dataset_dir)
