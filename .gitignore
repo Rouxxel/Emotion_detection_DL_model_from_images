@@ -2,6 +2,7 @@
 /dataset/
 /.kaggle/
 /trained_dl_models/
+/dataset/
 
 # Generated files
 *.avi
