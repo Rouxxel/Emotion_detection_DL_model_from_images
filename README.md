@@ -75,6 +75,12 @@ Place your `kaggle.json` file in the appropriate location (e.g., `C:/Users/YourN
 
 This installs dependencies and downloads the dataset:
 
+**Using the new CLI (recommended):**
+```bash
+python cli.py setup
+```
+
+**Or using the original script:**
 ```bash
 python set_up/full_set_up.py
 ```
@@ -83,8 +89,28 @@ python set_up/full_set_up.py
 
 ## 🧪 Usage
 
-### Train the models
+### Using the CLI (Recommended)
 
+**View current configuration:**
+```bash
+python cli.py config
+```
+
+**Train the models:**
+```bash
+python cli.py train --model both          # Train both models
+python cli.py train --model transfer      # Train only transfer learning model
+python cli.py train --model no-transfer   # Train only non-transfer learning model
+```
+
+**Launch user interface:**
+```bash
+python cli.py ui
+```
+
+### Using Jupyter Notebooks (Original Method)
+
+**Train the models:**
 ```bash
 python dl_scripts/dl_model_no_transfer_learning.ipynb
 ```
@@ -98,7 +124,7 @@ python dl_scripts/dl_model_transfer_learning.ipynb
 This will start building, training and saving the models in the root in a directory named 'trained_dl_models'
 You can configure parameters like epochs, model name, dataset path, etc., inside `configuration/config_file.json`.
 
-### User interface
+**User interface:**
 Note: For the UI to work, you must first train the models by running one of the training scripts. The trained models will be saved in the trained_dl_models/ directory.
 
 ```bash
@@ -140,10 +166,20 @@ scikit-learn==1.6.1
 opencv-python==4.10.0.84
 ``` 
 
-Install manually if set_up/full_set_up.py fails to download them:
+Install manually if setup fails:
 
 ```bash
+# Production dependencies
 pip install -r requirements.txt
+
+# Development dependencies (optional)
+pip install -r requirements-dev.txt
+```
+
+Or use the Makefile:
+```bash
+make install      # Production dependencies
+make install-dev  # Development dependencies
 ```
 
 ---
