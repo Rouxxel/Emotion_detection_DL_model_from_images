@@ -2,6 +2,8 @@
 
 Deep learning project in which 2 Deep learning models can be built, trained and saved for detecting emotions from `.png` images of human faces in gray-scale. It also includes a user interface.
 
+Small website form one of our members: https://awaken-ai.com/impact-of-transfer-learning-when-identifying-human-emotions/
+
 ## 📌 Features
 
 - Emotion classification into 7 categories:
