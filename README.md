@@ -23,6 +23,9 @@ Small website form one of our members: https://awaken-ai.com/impact-of-transfer-
 - **Cross-platform**: Works on Windows, macOS, and Linux
 - **Comprehensive Documentation**: Sphinx-generated documentation with examples
 - **Performance Monitoring**: Memory profiling and performance benchmarks
+- **Model Optimization**: TensorFlow Lite, TensorRT, and ONNX optimization
+- **Docker Containerization**: Production-ready containerization with multi-stage builds
+- **Resource Management**: Intelligent resource allocation and cleanup
 
 ---
 
@@ -148,6 +151,10 @@ make validate-data           # Validate dataset
 make preprocess-data         # Run data preprocessing
 make docs                    # Build documentation
 make experiments             # List experiments
+make optimize                # Optimize trained models
+make benchmark               # Run performance benchmarks
+make docker-build            # Build Docker images
+make docker-dev              # Run development container
 make clean                   # Clean up generated files
 ```
 
@@ -175,6 +182,10 @@ You can override configuration using environment variables:
 export EMOTION_DETECTION_DL_MODEL__BATCH_SIZE=32
 export EMOTION_DETECTION_DL_MODEL__LEARN_R=0.001
 python cli.py train
+
+# Performance optimization
+python cli.py optimize trained_dl_models/model.h5 --optimization-type tflite
+python cli.py benchmark --duration 60
 ```
 
 ---
@@ -254,6 +265,54 @@ pytest tests/test_config.py -v
 - **General logs**: `emotion_detection.log`
 - **Console output**: Real-time logging to terminal
 - **Configurable levels**: INFO, DEBUG, WARNING, ERROR
+
+## 🐳 Docker Usage
+
+### Quick Start with Docker:
+```bash
+# Setup Docker environment
+chmod +x scripts/docker-setup.sh
+./scripts/docker-setup.sh
+
+# Run development environment
+make docker-dev
+
+# Run production container
+make docker-prod
+
+# Train models in container
+make docker-train
+```
+
+### Docker Services:
+- **Development**: Full development environment with all tools
+- **Production**: Optimized production container
+- **Training**: Dedicated training environment with GPU support
+- **Documentation**: Sphinx documentation server
+
+## ⚡ Performance Optimization
+
+### Model Optimization:
+```bash
+# Optimize for mobile/edge deployment
+python cli.py optimize model.h5 --optimization-type tflite
+
+# Optimize for NVIDIA GPUs
+python cli.py optimize model.h5 --optimization-type tensorrt
+
+# Convert to ONNX format
+python cli.py optimize model.h5 --optimization-type onnx
+```
+
+### Performance Monitoring:
+```bash
+# Run performance benchmark
+python cli.py benchmark --duration 60
+
+# Run performance tests
+chmod +x scripts/performance-test.sh
+./scripts/performance-test.sh
+```
 
 ## 🔧 Development
 
