@@ -1,19 +1,26 @@
 # Makefile for Emotion Detection Deep Learning Project
 
-.PHONY: help install install-dev setup clean lint format test train ui
+.PHONY: help install install-dev setup clean lint format test train ui docs experiments
 
 # Default target
 help:
 	@echo "Available commands:"
-	@echo "  install      Install production dependencies"
-	@echo "  install-dev  Install development dependencies"
-	@echo "  setup        Run full project setup"
-	@echo "  clean        Clean up generated files"
-	@echo "  lint         Run code linting"
-	@echo "  format       Format code with black"
-	@echo "  test         Run tests"
-	@echo "  train        Train models"
-	@echo "  ui           Launch user interface"
+	@echo "  install         Install production dependencies"
+	@echo "  install-dev     Install development dependencies"
+	@echo "  setup           Run full project setup"
+	@echo "  clean           Clean up generated files"
+	@echo "  lint            Run code linting"
+	@echo "  format          Format code with black"
+	@echo "  test            Run tests"
+	@echo "  test-coverage   Run tests with coverage"
+	@echo "  train           Train models"
+	@echo "  train-tracked   Train models with experiment tracking"
+	@echo "  ui              Launch user interface"
+	@echo "  docs            Build documentation"
+	@echo "  docs-serve      Serve documentation locally"
+	@echo "  experiments     List experiments"
+	@echo "  validate-data   Validate dataset"
+	@echo "  preprocess-data Run data preprocessing"
 
 # Install production dependencies
 install:
@@ -44,18 +51,45 @@ format:
 	black configuration/ set_up/ cli.py setup.py
 	isort configuration/ set_up/ cli.py setup.py
 
-# Run tests (placeholder for when tests are added)
+# Run tests
 test:
-	@echo "Tests will be implemented in Phase 1 improvements"
-	# pytest tests/
+	pytest tests/
+
+# Run tests with coverage
+test-coverage:
+	pytest tests/ --cov=configuration --cov=set_up --cov=dl_scripts --cov=user_interface --cov=data_pipeline --cov=experiment_tracking --cov-report=html --cov-report=term
 
 # Train models
 train:
 	python cli.py train
 
+# Train models with experiment tracking
+train-tracked:
+	python cli.py train --track-experiment --experiment-name "makefile_training"
+
 # Launch user interface
 ui:
 	python cli.py ui
+
+# Build documentation
+docs:
+	cd docs && make html
+
+# Serve documentation locally
+docs-serve:
+	cd docs/_build/html && python -m http.server 8000
+
+# List experiments
+experiments:
+	python cli.py experiments list
+
+# Validate dataset
+validate-data:
+	python data_pipeline/data_validator.py dataset --output validation_report.json
+
+# Run data preprocessing
+preprocess-data:
+	python data_pipeline/preprocessing.py
 
 # Show configuration
 config:
