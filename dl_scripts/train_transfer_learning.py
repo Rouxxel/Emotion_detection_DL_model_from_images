@@ -41,6 +41,7 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 from configuration.config_invoke import load_config
+from performance.optimizer import PerformanceMonitor, InferenceOptimizer, ResourceManager, performance_profiler
 
 
 class TransferLearningTrainer:
@@ -58,6 +59,11 @@ class TransferLearningTrainer:
         
         # Set random seeds for reproducibility
         self._set_seeds()
+        
+        # Initialize performance components
+        self.performance_monitor = PerformanceMonitor()
+        self.resource_manager = ResourceManager()
+        self.resource_manager.optimize_system_settings()
         
     def _load_custom_config(self, config_path: str) -> Dict[str, Any]:
         """Load configuration from custom path."""
@@ -192,11 +198,15 @@ class TransferLearningTrainer:
             logging.error(f"Error building model: {str(e)}")
             raise
     
+    @performance_profiler
     def train_model(self, train_generator, val_generator) -> Dict[str, Any]:
         """Train the model with transfer learning approach."""
         try:
             if self.model is None:
                 raise ValueError("Model not built. Call build_model() first.")
+            
+            # Start performance monitoring
+            self.performance_monitor.start_monitoring()
             
             epochs = self.config["dl_model"]["transfer_learning"]["epoch"]
             fine_tuning_epochs = self.config["dl_model"]["transfer_learning"]["fine_tuning_epochs"]
@@ -257,11 +267,22 @@ class TransferLearningTrainer:
             }
             
             logging.info("Model training completed successfully")
+            
+            # Stop performance monitoring and log results
+            perf_metrics = self.performance_monitor.stop_monitoring()
+            logging.info("Training Performance Metrics:")
+            for key, value in perf_metrics.items():
+                logging.info(f"  {key}: {value:.2f}")
+            
             return self.history
             
         except Exception as e:
+            self.performance_monitor.stop_monitoring()
             logging.error(f"Error training model: {str(e)}")
             raise
+        finally:
+            # Cleanup resources
+            self.resource_manager.cleanup_resources()
     
     def save_model(self) -> str:
         """Save the trained model."""

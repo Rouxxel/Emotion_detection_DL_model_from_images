@@ -20,7 +20,13 @@ help:
 	@echo "  docs-serve      Serve documentation locally"
 	@echo "  experiments     List experiments"
 	@echo "  validate-data   Validate dataset"
-	@echo "  preprocess-data Run data preprocessing"
+	@echo "  preprocess-data Run data preprocessing
+	@echo "  optimize        Optimize trained models"
+	@echo "  benchmark       Run performance benchmarks"
+	@echo "  docker-build    Build Docker images"
+	@echo "  docker-dev      Run development container"
+	@echo "  docker-prod     Run production container"
+	@echo "  docker-train    Run training in container""
 
 # Install production dependencies
 install:
@@ -94,3 +100,31 @@ preprocess-data:
 # Show configuration
 config:
 	python cli.py config
+
+# Optimize models
+optimize:
+	python cli.py optimize trained_dl_models/emotion_detection_from_image_transfer_learning.h5
+
+# Run performance benchmark
+benchmark:
+	python cli.py benchmark --duration 30
+
+# Docker commands
+docker-build:
+	docker-compose build
+
+docker-dev:
+	docker-compose up emotion-detection-dev
+
+docker-prod:
+	docker-compose up -d emotion-detection-prod
+
+docker-train:
+	docker-compose up emotion-detection-train
+
+docker-docs:
+	docker-compose up -d docs
+
+docker-clean:
+	docker-compose down
+	docker system prune -f

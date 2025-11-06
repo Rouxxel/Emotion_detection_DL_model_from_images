@@ -107,6 +107,59 @@ def cmd_train(args) -> None:
         print(f"❌ Training failed: {e}")
         sys.exit(1)
 
+def cmd_optimize(args) -> None:
+    """Optimize trained models for better performance."""
+    try:
+        from performance.optimizer import ModelOptimizer
+        optimizer = ModelOptimizer()
+        
+        model_path = args.model_path
+        if not os.path.exists(model_path):
+            print(f"❌ Model not found: {model_path}")
+            sys.exit(1)
+        
+        print(f"🔧 Optimizing model: {model_path}")
+        optimized_path = optimizer.optimize_model(model_path, args.optimization_type)
+        print(f"✅ Model optimized: {optimized_path}")
+        
+    except Exception as e:
+        print(f"❌ Model optimization failed: {e}")
+        sys.exit(1)
+
+def cmd_benchmark(args) -> None:
+    """Run performance benchmarks."""
+    try:
+        from performance.optimizer import PerformanceMonitor, ResourceManager
+        
+        monitor = PerformanceMonitor()
+        resource_mgr = ResourceManager()
+        
+        print("🔍 Running performance benchmark...")
+        
+        # Optimize system settings
+        resource_mgr.optimize_system_settings()
+        
+        # Start monitoring
+        monitor.start_monitoring()
+        
+        # Simulate workload
+        import time
+        time.sleep(args.duration)
+        
+        # Get results
+        metrics = monitor.stop_monitoring()
+        
+        print("📊 Benchmark Results:")
+        for key, value in metrics.items():
+            print(f"  {key}: {value:.2f}")
+        
+        # Cleanup
+        resource_mgr.cleanup_resources()
+        
+    except Exception as e:
+        print(f"❌ Benchmark failed: {e}")
+        sys.exit(1)
+
 def cmd_experiments(args) -> None:
     """Manage experiments."""
     try:
@@ -297,6 +350,30 @@ Examples:
         help='Confirm deletion'
     )
     exp_parser.set_defaults(func=cmd_experiments)
+    
+    # Optimize command
+    opt_parser = subparsers.add_parser('optimize', help='Optimize trained models')
+    opt_parser.add_argument(
+        'model_path',
+        help='Path to the model to optimize'
+    )
+    opt_parser.add_argument(
+        '--optimization-type',
+        choices=['tflite', 'tensorrt', 'onnx'],
+        default='tflite',
+        help='Type of optimization to apply'
+    )
+    opt_parser.set_defaults(func=cmd_optimize)
+    
+    # Benchmark command
+    bench_parser = subparsers.add_parser('benchmark', help='Run performance benchmarks')
+    bench_parser.add_argument(
+        '--duration',
+        type=int,
+        default=30,
+        help='Benchmark duration in seconds'
+    )
+    bench_parser.set_defaults(func=cmd_benchmark)
     
     # UI command
     ui_parser = subparsers.add_parser('ui', help='Launch user interface')
