@@ -1,0 +1,57 @@
+# Production Dockerfile for Emotion Detection Deep Learning Project
+FROM python:3.10-slim as base
+
+# Set environment variables for production
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    EMOTION_DETECTION_ENV=production
+
+# Install system dependencies (minimal for production)
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libatlas-base-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Create non-root user for security
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+WORKDIR /app
+
+# Copy requirements and install dependencies
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code (excluding development files)
+COPY configuration/ ./configuration/
+COPY dl_scripts/ ./dl_scripts/
+COPY user_interface/ ./user_interface/
+COPY data_pipeline/ ./data_pipeline/
+COPY experiment_tracking/ ./experiment_tracking/
+COPY performance/ ./performance/
+COPY cli.py setup.py ./
+
+# Create necessary directories and set permissions
+RUN mkdir -p /app/trained_dl_models /app/experiments /app/logs \
+    && chown -R appuser:appuser /app
+
+# Switch to non-root user
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import tensorflow as tf; print('OK')" || exit 1
+
+# Default command
+CMD ["python", "cli.py", "ui", "--mode", "webcam"]

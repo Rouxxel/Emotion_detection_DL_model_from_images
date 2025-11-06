@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Development service
+  emotion-detection-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: emotion-detection-dev
+    volumes:
+      - .:/app
+      - ./dataset:/app/dataset
+      - ./trained_dl_models:/app/trained_dl_models
+      - ./experiments:/app/experiments
+    ports:
+      - "8000:8000"  # Documentation server
+      - "8888:8888"  # Jupyter (if needed)
+    environment:
+      - EMOTION_DETECTION_ENV=development
+      - PYTHONPATH=/app
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Production service
+  emotion-detection-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: emotion-detection-prod
+    volumes:
+      - ./trained_dl_models:/app/trained_dl_models:ro
+      - ./experiments:/app/experiments
+      - ./logs:/app/logs
+    environment:
+      - EMOTION_DETECTION_ENV=production
+      - EMOTION_DETECTION_DL_MODEL__BATCH_SIZE=32
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+
+  # Training service (for model training)
+  emotion-detection-train:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: emotion-detection-train
+    volumes:
+      - ./dataset:/app/dataset:ro
+      - ./trained_dl_models:/app/trained_dl_models
+      - ./experiments:/app/experiments
+    environment:
+      - EMOTION_DETECTION_ENV=training
+      - PYTHONPATH=/app
+    command: python cli.py train --track-experiment --experiment-name "docker_training"
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4.0'
+
+  # Documentation service
+  docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: emotion-detection-docs
+    volumes:
+      - ./docs:/app/docs
+    ports:
+      - "8080:8000"
+    command: >
+      sh -c "cd docs && 
+             make html && 
+             cd _build/html && 
+             python -m http.server 8000 --bind 0.0.0.0"
+
+networks:
+  default:
+    name: emotion-detection-network
