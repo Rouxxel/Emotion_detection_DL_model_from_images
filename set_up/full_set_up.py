@@ -1,16 +1,30 @@
 import logging
 import os
-from setup_kaggle_and_dependencies import main as setup_kaggle_and_dependencies_main
-from download_dataset import main as download_dataset_main
-from augment_minority_classes import main as augment_minority_classes_main
+import sys
+from pathlib import Path
+
+# Ensure project root is on path (for "python set_up/full_set_up.py" or "python cli.py setup")
+_project_root = Path(__file__).resolve().parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+from set_up.setup_kaggle_and_dependencies import main as setup_kaggle_and_dependencies_main
+from set_up.download_dataset import main as download_dataset_main
+from set_up.augment_minority_classes import main as augment_minority_classes_main
 
 # Set up logging configuration
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def get_default_kaggle_path():
-    """Get the default Kaggle credentials path based on the operating system."""
+    """Get the default Kaggle credentials path: standard home location first, then project .kaggle/."""
     home_dir = os.path.expanduser("~")
-    return os.path.join(home_dir, ".kaggle", "kaggle.json")
+    home_kaggle = os.path.join(home_dir, ".kaggle", "kaggle.json")
+    if os.path.isfile(home_kaggle):
+        return home_kaggle
+    project_kaggle = _project_root / ".kaggle" / "kaggle.json"
+    if project_kaggle.is_file():
+        return str(project_kaggle)
+    return home_kaggle  # so error message points to the standard location
 
 def full_set_up(kaggle_json_path=None, 
                 requirements_path="requirements.txt", 
@@ -28,6 +42,11 @@ def full_set_up(kaggle_json_path=None,
         # Verify Kaggle credentials exist
         if not os.path.exists(kaggle_json_path):
             raise FileNotFoundError(f"Kaggle credentials not found at {kaggle_json_path}")
+        
+        # If using project-local .kaggle, tell Kaggle CLI to use it for the download step
+        kaggle_path_resolved = Path(kaggle_json_path).resolve()
+        if kaggle_path_resolved.parent == (_project_root / ".kaggle"):
+            os.environ["KAGGLE_CONFIG_DIR"] = str(_project_root / ".kaggle")
         
         # Set up Kaggle and install dependencies
         setup_kaggle_and_dependencies_main(kaggle_json_path, requirements_path)

@@ -39,9 +39,14 @@ def setup_kaggle_credentials(kaggle_json_path):
             os.makedirs(kaggle_dir)
             logging.info(f"Created directory: {kaggle_dir}")
 
-        # Copy kaggle.json to project .kaggle directory
-        shutil.copy(kaggle_json_path, dest_path)
-        logging.info(f"Copied {kaggle_json_path} to {dest_path}")
+        # Copy kaggle.json to project .kaggle (skip if already there)
+        src_abs = os.path.abspath(kaggle_json_path)
+        dest_abs = os.path.abspath(dest_path)
+        if src_abs != dest_abs:
+            shutil.copy(kaggle_json_path, dest_path)
+            logging.info(f"Copied {kaggle_json_path} to {dest_path}")
+        else:
+            logging.info(f"Using Kaggle credentials at {dest_path}")
 
         # Set file permission (Unix-like systems)
         try:

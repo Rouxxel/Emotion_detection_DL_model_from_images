@@ -8,9 +8,9 @@
         "emojis":["👿", "🤢" , "😱" , "😊" , "😐 ", "😔" , "😲" ]
     },
     "datasets":{
-        "dataset_directory":"../dataset",
-        "train_directory":"../dataset/train",
-        "test_directory":"../dataset/test"
+        "dataset_directory":"dataset",
+        "train_directory":"dataset/train",
+        "test_directory":"dataset/test"
     },
     "dl_model":{
         "transfer_learning":{
@@ -26,6 +26,6 @@
         "batch_size":64,
         "fixed_seed":12,
         "learn_r":0.01,
-        "directory": "../trained_dl_models"
+        "directory": "trained_dl_models"
     }
 }
