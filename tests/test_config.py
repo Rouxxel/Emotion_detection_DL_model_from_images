@@ -38,12 +38,14 @@ class TestConfiguration(unittest.TestCase):
             "dl_model": {
                 "transfer_learning": {
                     "name": "emotion_detection_from_image_transfer_learning.h5",
+                    "subdir": "tf_learning",
                     "epoch": 30,
                     "fine_tuning_epochs": 20,
                     "early_stop_crit": 3
                 },
                 "no_transfer_learning": {
                     "name": "emotion_detection_from_image_no_transfer_learning.h5",
+                    "subdir": "no_tf_learning",
                     "epoch": 20
                 },
                 "batch_size": 64,

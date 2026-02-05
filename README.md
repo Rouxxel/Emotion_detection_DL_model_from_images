@@ -126,7 +126,9 @@ Train **one** or **both** of:
 - **Transfer learning**: DenseNet121 fine-tuned for emotions.
 - **Custom CNN**: small CNN built from scratch.
 
-Trained models are saved as `.h5` files in **`trained_dl_models/`**.
+Trained models, training logs, and accuracy/loss plots are saved under **`trained_dl_models/`** in subfolders:
+- **`trained_dl_models/tf_learning/`** — transfer learning model (`.h5`), `log_history_transfer_learning.log`, `transfer_learning_history.png`
+- **`trained_dl_models/no_tf_learning/`** — custom CNN model (`.h5`), `log_history_no_transfer_learning.log`, `no_transfer_learning_history.png`
 
 **Train both (recommended for the UI):**
 ```bash
@@ -135,15 +137,11 @@ python cli.py train --model both
 
 **Train only one:**
 ```bash
-python cli.py train --model transfer      # transfer learning → emotion_detection_from_image_transfer_learning.h5
-python cli.py train --model no-transfer  # custom CNN → emotion_detection_from_image_no_transfer_learning.h5
+python cli.py train --model transfer      # → trained_dl_models/tf_learning/*.h5
+python cli.py train --model no-transfer  # → trained_dl_models/no_tf_learning/*.h5
 ```
 
-Training can take a long time (epochs and hardware-dependent). When it finishes, you should see:
-
-- `trained_dl_models/emotion_detection_from_image_transfer_learning.h5`
-- `trained_dl_models/emotion_detection_from_image_no_transfer_learning.h5`  
-  (if you trained both).
+Training can take a long time (epochs and hardware-dependent). When it finishes, each model’s folder will contain the `.h5` file, a `.log` file, and an accuracy/loss `.png` plot.
 
 ### 5. Run the camera UI (webcam window)
 
@@ -338,7 +336,7 @@ pytest tests/test_config.py -v
 
 ## 📝 Logging
 
-- **Training logs**: `log_history_transfer_learning.log`, `log_history_no_transfer_learning.log`
+- **Training logs**: inside `trained_dl_models/tf_learning/` and `trained_dl_models/no_tf_learning/` (e.g. `log_history_transfer_learning.log`, `log_history_no_transfer_learning.log`)
 - **General logs**: `emotion_detection.log`
 - **Console output**: Real-time logging to terminal
 - **Configurable levels**: INFO, DEBUG, WARNING, ERROR

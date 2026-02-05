@@ -53,7 +53,10 @@ class TransferLearningTrainer:
         self.model = None
         self.history = None
         self.class_names = self.config["classes"]["labels"]
-        
+        self._output_dir = os.path.join(
+            self.config["dl_model"]["directory"],
+            self.config["dl_model"]["transfer_learning"].get("subdir", "tf_learning")
+        )
         # Set up logging
         self._setup_logging()
         
@@ -72,12 +75,11 @@ class TransferLearningTrainer:
     
     def _setup_logging(self) -> None:
         """Set up logging configuration."""
-        log_file = "log_history_transfer_learning.log"
-        
+        os.makedirs(self._output_dir, exist_ok=True)
+        log_file = os.path.join(self._output_dir, "log_history_transfer_learning.log")
         # Clear existing handlers
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
-        
         logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s | %(levelname)s | %(message)s",
@@ -86,7 +88,6 @@ class TransferLearningTrainer:
                 logging.StreamHandler(sys.stdout)
             ]
         )
-        
         logging.info(f"Transfer learning model training started. Logs saved to {log_file}")
     
     def _set_seeds(self) -> None:
@@ -289,17 +290,11 @@ class TransferLearningTrainer:
         try:
             if self.model is None:
                 raise ValueError("No model to save. Train the model first.")
-            
-            # Create directory if it doesn't exist
-            model_dir = self.config["dl_model"]["directory"]
-            os.makedirs(model_dir, exist_ok=True)
-            
+            os.makedirs(self._output_dir, exist_ok=True)
             model_name = self.config["dl_model"]["transfer_learning"]["name"]
-            model_path = os.path.join(model_dir, model_name)
-            
+            model_path = os.path.join(self._output_dir, model_name)
             self.model.save(model_path)
             logging.info(f"Model saved to {model_path}")
-            
             return model_path
             
         except Exception as e:
@@ -389,9 +384,8 @@ def main():
         
         # Save model
         model_path = trainer.save_model()
-        
-        # Plot training history
-        trainer.plot_training_history("transfer_learning_history.png")
+        # Plot training history (save in same output folder as .h5 and .log)
+        trainer.plot_training_history(os.path.join(trainer._output_dir, "transfer_learning_history.png"))
         
         logging.info("Transfer learning model training completed successfully!")
         

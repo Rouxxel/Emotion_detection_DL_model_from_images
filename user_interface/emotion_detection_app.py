@@ -13,6 +13,9 @@ from pathlib import Path
 from typing import Optional, Tuple
 import argparse
 
+# Reduce TensorFlow C++ log verbosity (e.g. oneDNN "custom operations are on" messages)
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"  # 0=all, 1=no INFO, 2=no WARNING, 3=errors only
+
 # Computer Vision and UI
 import cv2
 import numpy as np
@@ -70,22 +73,26 @@ class EmotionDetectionApp:
         """Load the trained emotion detection models."""
         try:
             model_dir = self.config["dl_model"]["directory"]
-            
+            tl_cfg = self.config["dl_model"]["transfer_learning"]
+            ntl_cfg = self.config["dl_model"]["no_transfer_learning"]
+
             if self.model_type in ["transfer", "both"]:
-                transfer_model_path = os.path.join(
-                    model_dir, 
-                    self.config["dl_model"]["transfer_learning"]["name"]
+                subdir = tl_cfg.get("subdir")
+                transfer_model_path = (
+                    os.path.join(model_dir, subdir, tl_cfg["name"])
+                    if subdir else os.path.join(model_dir, tl_cfg["name"])
                 )
                 if os.path.exists(transfer_model_path):
                     self.models["transfer"] = tf.keras.models.load_model(transfer_model_path)
                     logging.info(f"Transfer learning model loaded from {transfer_model_path}")
                 else:
                     logging.warning(f"Transfer learning model not found at {transfer_model_path}")
-            
+
             if self.model_type in ["no_transfer", "both"]:
-                no_transfer_model_path = os.path.join(
-                    model_dir,
-                    self.config["dl_model"]["no_transfer_learning"]["name"]
+                subdir = ntl_cfg.get("subdir")
+                no_transfer_model_path = (
+                    os.path.join(model_dir, subdir, ntl_cfg["name"])
+                    if subdir else os.path.join(model_dir, ntl_cfg["name"])
                 )
                 if os.path.exists(no_transfer_model_path):
                     self.models["no_transfer"] = tf.keras.models.load_model(no_transfer_model_path)

@@ -477,7 +477,7 @@ def main():
     
     try:
         # Example: optimize a model (if it exists)
-        model_path = "trained_dl_models/emotion_detection_from_image_transfer_learning.h5"
+        model_path = "trained_dl_models/tf_learning/emotion_detection_from_image_transfer_learning.h5"
         if os.path.exists(model_path):
             optimized_path = optimizer.optimize_model(model_path, "tflite")
             print(f"Model optimized: {optimized_path}")
