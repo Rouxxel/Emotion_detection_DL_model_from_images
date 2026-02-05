@@ -20,13 +20,14 @@ help:
 	@echo "  docs-serve      Serve documentation locally"
 	@echo "  experiments     List experiments"
 	@echo "  validate-data   Validate dataset"
-	@echo "  preprocess-data Run data preprocessing
+	@echo "  preprocess-data Run data preprocessing"
 	@echo "  optimize        Optimize trained models"
 	@echo "  benchmark       Run performance benchmarks"
 	@echo "  docker-build    Build Docker images"
 	@echo "  docker-dev      Run development container"
 	@echo "  docker-prod     Run production container"
-	@echo "  docker-train    Run training in container""
+	@echo "  docker-train    Run training in container"
+	@echo "  docker-docs     Serve Sphinx documentation"
 
 # Install production dependencies
 install:

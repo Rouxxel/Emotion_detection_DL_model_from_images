@@ -2,6 +2,9 @@
 .git
 .gitignore
 
+# Secrets (do not copy into images)
+.kaggle/
+
 # Python
 __pycache__
 *.pyc
@@ -90,7 +93,6 @@ docker-compose*
 # CI/CD
 .github/
 
-# Development files
-requirements-dev.txt
+# Development files (keep requirements-dev.txt so Dockerfile dev stage can COPY it)
 pytest.ini
 .pre-commit-config.yaml

@@ -33,8 +33,9 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code (excluding development files)
+# Copy source code (excluding dev-only: tests, notebooks, docs build)
 COPY configuration/ ./configuration/
+COPY set_up/ ./set_up/
 COPY dl_scripts/ ./dl_scripts/
 COPY user_interface/ ./user_interface/
 COPY data_pipeline/ ./data_pipeline/

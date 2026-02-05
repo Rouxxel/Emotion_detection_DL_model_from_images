@@ -347,25 +347,31 @@ pytest tests/test_config.py -v
 
 ### Quick Start with Docker:
 ```bash
-# Setup Docker environment
+# Setup Docker environment (creates dataset, trained_dl_models, experiments, logs)
 chmod +x scripts/docker-setup.sh
 ./scripts/docker-setup.sh
 
-# Run development environment
+# Build images
+make docker-build
+
+# Run development environment (interactive shell in container)
 make docker-dev
 
-# Run production container
+# Run production container (UI; requires trained .h5 models in trained_dl_models/)
 make docker-prod
 
-# Train models in container
+# Train models in container (uses dataset/ and writes to trained_dl_models/)
 make docker-train
+
+# Serve Sphinx docs at http://localhost:8080
+make docker-docs
 ```
 
 ### Docker Services:
-- **Development**: Full development environment with all tools
-- **Production**: Optimized production container
-- **Training**: Dedicated training environment with GPU support
-- **Documentation**: Sphinx documentation server
+- **Development** (`emotion-detection-dev`): Full dev environment, volumes for code/dataset/models.
+- **Production** (`emotion-detection-prod`): Runs `cli.py ui --mode webcam`; mount `trained_dl_models/` with your `.h5` files.
+- **Training** (`emotion-detection-train`): Runs `cli.py train` with experiment tracking; mount `dataset/` and `trained_dl_models/`.
+- **Documentation** (`docs`): Builds Sphinx HTML and serves at port 8080.
 
 ## ⚡ Performance Optimization
 
