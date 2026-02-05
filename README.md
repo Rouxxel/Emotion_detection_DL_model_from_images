@@ -33,34 +33,24 @@ Small website form one of our members: https://awaken-ai.com/impact-of-transfer-
 
 ```
 Emotion_detection_DL_model_from_images/
-|
-├── configuration/
-│   ├── __init__.py
-│   ├── config_file.json         # JSON configuration file
-│   └── config_invoke.py         # Loads config JSON
-│
-├── dl_scripts/
-│   ├── __init__.py
-│   ├── dl_model_no_transfer_learning.ipynb # Script to build, train and save model
-│   ├── dl_model_transfer_learning.ipynb # Script to build, train and save model
-│
-├── documentation/                      # all documentation files
-│
-├── set_up/
-│   ├── setup_kaggle_and_dependencies.py 
-│   ├── download_dataset.py
-│   └── full_set_up.py                   #Run the other 2 scripts in the directory
-│
-├── user_interface/
-│   ├── __init__.py 
-│   ├── emotion_detection_UI.ipynb      #Notebook for user interface
-│   └── haarcascade_frontalface_default.xml #pre-trained classifier used by OpenCV                   
-│
-├── .gitignore
-├── Dataset_distribution.png
-├── requirements.txt             # Python dependencies
+├── configuration/          # Configuration management (JSON config, loaders)
+├── data_pipeline/         # Data validation and preprocessing
+├── dl_scripts/             # Training scripts and notebooks (transfer learning + custom CNN)
+├── docs/                   # All documentation: Sphinx API/docs source + project report/slides
+│   ├── conf.py, index.rst  # Sphinx build (make docs → _build/html)
+│   └── project/            # Project deliverables (report PDF, LaTeX, slides) — see docs/PROJECT_ORGANIZATION.md
+├── documentation/          # Legacy: project report/slides (to be merged into docs/project/ — see docs/PROJECT_ORGANIZATION.md)
+├── experiment_tracking/    # Experiment tracking and versioning
+├── performance/            # Model optimization (TFLite, TensorRT, ONNX)
+├── set_up/                 # Setup: Kaggle, dependencies, dataset download
+├── tests/                  # Unit and integration tests
+├── user_interface/         # Single UI package: app, notebook, Haar cascade for webcam/image detection
+├── cli.py                  # Command-line interface
+├── requirements.txt
 └── README.md
 ```
+
+**Documentation:** There are two folders today: **`docs/`** (Sphinx source for generated API/user docs) and **`documentation/`** (project report PDF, LaTeX, and slides). For a single, clearer layout, see [docs/PROJECT_ORGANIZATION.md](docs/PROJECT_ORGANIZATION.md).
 
 ---
 
@@ -91,6 +81,93 @@ python cli.py setup
 ```bash
 python set_up/full_set_up.py
 ```
+
+---
+
+## 🎯 Step-by-step: get a trained model and run the camera UI
+
+Do all steps **from the project root** (the folder that contains `cli.py` and `README.md`).
+
+### 1. Environment and credentials
+
+- **Python**: 3.8+ with `pip`.
+- **Kaggle**: Create an account at [kaggle.com](https://www.kaggle.com), then get your API key (Account → Create New API Token). The setup script looks for `kaggle.json` in this order:
+  1. **Standard location** (checked first):
+     - **Windows**: `C:\Users\<YourName>\.kaggle\kaggle.json`
+     - **macOS/Linux**: `~/.kaggle/kaggle.json`
+  2. **Project root** (fallback): `<project_folder>/.kaggle/kaggle.json`
+
+  As an option, you can put your Kaggle credentials in the project root by creating a `.kaggle` folder and placing `kaggle.json` inside it. This folder is in `.gitignore`, so your credentials are not committed. Use this if you prefer not to use the standard user folder.
+
+### 2. Clone and install
+
+```bash
+git clone https://github.com/your-username/Emotion_detection_DL_model_from_images.git
+cd Emotion_detection_DL_model_from_images
+pip install -r requirements.txt
+```
+
+### 3. Setup (dataset and dependencies)
+
+This installs Python dependencies, downloads the FER emotion dataset from Kaggle, and augments the training data.
+
+```bash
+python cli.py setup
+```
+
+- Dataset is stored under **`dataset/`** (e.g. `dataset/train/`, `dataset/test/`).
+- If your `kaggle.json` is elsewhere:  
+  `python cli.py setup --kaggle-path "C:\path\to\kaggle.json"`
+
+### 4. Train the model(s)
+
+Train **one** or **both** of:
+
+- **Transfer learning**: DenseNet121 fine-tuned for emotions.
+- **Custom CNN**: small CNN built from scratch.
+
+Trained models are saved as `.h5` files in **`trained_dl_models/`**.
+
+**Train both (recommended for the UI):**
+```bash
+python cli.py train --model both
+```
+
+**Train only one:**
+```bash
+python cli.py train --model transfer      # transfer learning → emotion_detection_from_image_transfer_learning.h5
+python cli.py train --model no-transfer  # custom CNN → emotion_detection_from_image_no_transfer_learning.h5
+```
+
+Training can take a long time (epochs and hardware-dependent). When it finishes, you should see:
+
+- `trained_dl_models/emotion_detection_from_image_transfer_learning.h5`
+- `trained_dl_models/emotion_detection_from_image_no_transfer_learning.h5`  
+  (if you trained both).
+
+### 5. Run the camera UI (webcam window)
+
+The **user interface** that opens a window and uses your webcam is in **`user_interface/`**. It loads the trained `.h5` model(s) from `trained_dl_models/` and runs real-time emotion detection on the camera feed.
+
+**Launch with default (both models, webcam):**
+```bash
+python cli.py ui
+```
+
+Or call the app directly:
+
+```bash
+python user_interface/emotion_detection_app.py --model both --mode webcam
+```
+
+**Options:**
+
+- `--model transfer` or `--model no-transfer`: use only one of the two models.
+- `--mode image --input photo.png --output result.png`: run on a single image instead of webcam.
+
+In webcam mode, use **`s`** to switch between models (if both are loaded) and **`q`** to quit.
+
+**Summary:** Setup → Train → UI. All from project root; the config points to `dataset/` and `trained_dl_models/` so the UI finds the models you just trained.
 
 ---
 
@@ -332,16 +409,8 @@ make format
 make lint
 ```
 
-### Project Structure:
-```
-├── configuration/          # Configuration management
-├── data_pipeline/         # Data validation and preprocessing
-├── dl_scripts/           # Training scripts (converted from notebooks)
-├── set_up/              # Setup and installation scripts
-├── tests/               # Unit and integration tests
-├── user_interface/      # Real-time detection application
-├── cli.py              # Command-line interface
-└── Makefile           # Development commands
-```
+### Project structure
+
+See the [Directory Structure](#-directory-structure) section above for the full layout.
 
 ---
