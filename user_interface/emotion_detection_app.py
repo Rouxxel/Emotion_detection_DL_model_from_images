@@ -212,9 +212,23 @@ class EmotionDetectionApp:
             logging.error(f"Error predicting emotion: {str(e)}")
             return "Unknown", "❓", 0.0
     
+    def _check_opencv_gui(self) -> None:
+        """Verify OpenCV was built with GUI support (required for webcam window)."""
+        try:
+            cv2.namedWindow("_gui_check", cv2.WINDOW_NORMAL)
+            cv2.destroyWindow("_gui_check")
+        except cv2.error as e:
+            if "not implemented" in str(e).lower() or "cvShowImage" in str(e):
+                raise RuntimeError(
+                    "OpenCV has no GUI support (e.g. opencv-python-headless is installed). "
+                    "Webcam mode needs a full OpenCV build. Fix: pip uninstall opencv-python-headless; pip install opencv-python"
+                ) from e
+            raise
+
     def run_webcam_detection(self) -> None:
         """Run real-time emotion detection using webcam."""
         try:
+            self._check_opencv_gui()
             # Initialize webcam
             cap = cv2.VideoCapture(0)
             

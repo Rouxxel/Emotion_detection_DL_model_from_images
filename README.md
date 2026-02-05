@@ -165,6 +165,8 @@ python user_interface/emotion_detection_app.py --model both --mode webcam
 
 In webcam mode, use **`s`** to switch between models (if both are loaded) and **`q`** to quit.
 
+**Webcam error “The function is not implemented” / no window:** Your OpenCV build has no GUI support (often because `opencv-python-headless` is installed). Fix: `pip uninstall opencv-python-headless` then `pip install opencv-python`. Use **image mode** instead if you only need file-based detection: `python cli.py ui --mode image --input photo.png --output result.png`.
+
 **Summary:** Setup → Train → UI. All from project root; the config points to `dataset/` and `trained_dl_models/` so the UI finds the models you just trained.
 
 ---
