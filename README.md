@@ -420,3 +420,15 @@ make lint
 See the [Directory Structure](#-directory-structure) section above for the full layout.
 
 ---
+
+## 📄 License
+
+This project is licensed under the [Apache License 2.0](LICENSE).
+
+You may use, modify, and distribute this software, including for commercial purposes, provided that you:
+
+- Include a copy of the Apache 2.0 license
+- Retain copyright and attribution notices
+- Preserve the contents of the [NOTICE](NOTICE) file in redistributions / derivative works
+
+**Authors:** Sebastian Russo, Guillermo Trigo, Javier Peres
